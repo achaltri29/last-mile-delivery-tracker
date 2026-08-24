@@ -4,15 +4,26 @@ A comprehensive last-mile logistics dispatch and monitoring web application that
 
 ---
 
-## 1. Project Architecture
+## 1. Production & Repository Links
 
-The repository is divided into two primary sub-folders:
-*   `backend/`: Node.js + Express API server with Mongoose schemas and automated Jest integration tests.
-*   `frontend/`: React + Vite SPA using vanilla CSS and Lucide icons.
+*   **Production Frontend Portal:** [https://unthinkable-logistics-frontend.onrender.com](https://unthinkable-logistics-frontend.onrender.com)
+*   **Production Backend API:** [https://unthinkable-logistics-backend.onrender.com](https://unthinkable-logistics-backend.onrender.com)
+*   **GitHub Repository:** [https://github.com/achaltri29/last-mile-delivery-tracker](https://github.com/achaltri29/last-mile-delivery-tracker)
 
 ---
 
-## 2. Local Setup Instructions
+## 2. Project Architecture & Directory Structure
+
+The repository follows a clean monorepo folder layout:
+*   `backend/`: Node.js + Express API server with Mongoose schemas and automated Jest integration tests.
+*   `frontend/`: React + Vite SPA using vanilla CSS and Lucide icons.
+*   `README.md`: System configuration guide.
+*   `SYSTEM_DESIGN.md`: Logistics engine architectural design.
+*   `.env.example`: Template configuration variables.
+
+---
+
+## 3. Local Setup Instructions
 
 ### Prerequisites
 *   Node.js (v18+)
@@ -27,6 +38,8 @@ The repository is divided into two primary sub-folders:
     *   `MONGODB_URI`: Your MongoDB connection string.
     *   `JWT_SECRET`: A secure random secret key for signing session tokens.
     *   `PORT`: Server listening port (default: `5001`).
+    *   `FAST2SMS_API_KEY`: Key for SMS integration.
+    *   `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` / `EMAIL_FROM`: Brevo SMTP configurations.
 
 ### Running the Application
 
@@ -57,7 +70,7 @@ npm run test
 
 ---
 
-## 3. Database Schema Documentation
+## 4. Database Schema Documentation
 
 The system manages 5 primary Mongoose collections under the `unthinkable_delivery` database:
 
@@ -115,7 +128,7 @@ Immutable chronological tracking timeline.
 
 ---
 
-## 4. API Endpoints Catalog
+## 5. API Endpoints Catalog
 
 ### Authentication (`/api/auth`)
 *   `POST /register` -> Register customer (hashed password, issues JWT).
@@ -138,3 +151,17 @@ Immutable chronological tracking timeline.
 *   `PUT /zones/:id` -> (Admin) Edit zone name/pincodes (fails if removing pincodes with active orders).
 *   `DELETE /zones/:id` -> (Admin) Delete zone (fails if active orders are mapped).
 *   `PUT /rates/:id` -> (Admin) Configure base weights, rates, and surcharges.
+
+---
+
+## 6. Rate Calculation Details
+*   **Volumetric Weight (kg):** $\text{Volumetric Weight} = \frac{L \times B \times H \text{ (cm)}}{5000}$
+*   **Billable Weight (kg):** $\text{Billable Weight} = \max(\text{Actual Weight}, \text{Volumetric Weight})$
+*   **Price Equation:** $\text{Delivery Charge} = \text{baseRate} + \max(0, \text{billableWeight} - \text{baseWeight}) \times \text{perKgRate} + \text{surcharge}$
+*   **COD Surcharge:** Added if `paymentType === 'COD'` using the configured `codSurcharge` on the rate card.
+*   **Rate Cards Lookup:** Checked dynamically against the database matching `orderType` (`B2B`/`B2C`) and `zoneType` (`intra-zone`/`inter-zone`).
+
+---
+
+## 7. Testing Status
+The automated Jest integration test suite contains **45 integration tests** verifying authentication, pricing engines, zone detection, rescheduling pipelines, and admin CRUD routes. **45/45 tests pass successfully.**
