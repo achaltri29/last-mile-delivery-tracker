@@ -8,7 +8,6 @@ A comprehensive last-mile logistics dispatch and monitoring web application that
 
 *   **Production Frontend Portal:** [https://unthinkable-logistics-frontend.onrender.com](https://unthinkable-logistics-frontend.onrender.com)
 *   **Production Backend API:** [https://unthinkable-logistics-backend.onrender.com](https://unthinkable-logistics-backend.onrender.com)
-*   **GitHub Repository:** [https://github.com/achaltri29/last-mile-delivery-tracker](https://github.com/achaltri29/last-mile-delivery-tracker)
 
 ---
 
