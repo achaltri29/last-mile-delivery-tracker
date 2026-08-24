@@ -5,8 +5,28 @@ const orderRoutes = require('./routes/orderRoutes');
 
 const app = express();
 
-// Middlewares
-app.use(cors());
+// CORS configuration supporting dynamic production origins and local development
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl, postman, supertest)
+    if (!origin) {
+      return callback(null, true);
+    }
+
+    const frontendUrl = process.env.FRONTEND_URL;
+    const isLocalhost = origin.startsWith('http://localhost:') || origin.startsWith('http://127.0.0.1:');
+
+    if (isLocalhost || origin === frontendUrl) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Main authentication routes
